@@ -1,0 +1,6 @@
+@Lar.Connections.WebApi_HostAddress = http://localhost:5273
+
+GET {{Lar.Connections.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
