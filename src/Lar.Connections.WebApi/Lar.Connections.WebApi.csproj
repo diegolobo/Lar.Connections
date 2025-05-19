@@ -14,4 +14,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Lar.Connections.Application\Lar.Connections.Application.csproj" />
+    <ProjectReference Include="..\Lar.Connections.Domain\Lar.Connections.Domain.csproj" />
+    <ProjectReference Include="..\Lar.Connections.Infrastructure\Lar.Connections.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
