@@ -7,7 +7,6 @@ public class Phone
 	public long Id { get; set; }
 	public string? Number { get; set; }
 	public PhoneType? Type { get; set; }
-	public bool Active { get; set; }
 	public long PersonId { get; set; }
 	public Person? Person { get; set; }
 
@@ -17,8 +16,7 @@ public class Phone
 		{
 			PersonId = personId,
 			Number = number,
-			Type = type,
-			Active = true
+			Type = type
 		};
 	}
 

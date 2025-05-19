@@ -41,7 +41,7 @@ public class Person
 	public void RemovePhone(long id)
 	{
 		var phone = Phones.FirstOrDefault(x => x.Id == id);
-		if (phone != null) phone.Active = false;
+		if (phone != null) Phones.Remove(phone);
 	}
 
 	public void UpdatePhone(long id, string number, PhoneType type)

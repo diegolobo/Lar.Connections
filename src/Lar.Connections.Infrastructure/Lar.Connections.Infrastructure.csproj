@@ -7,7 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Lar.Connections.Application\Lar.Connections.Application.csproj" />
     <ProjectReference Include="..\Lar.Connections.Domain\Lar.Connections.Domain.csproj" />
   </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Dapper" Version="2.1.66" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+		<PackageReference Include="Serilog" Version="4.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Scripts\CREATE TABLE People.sql">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Scripts\CREATE TABLE Phones.sql">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 
 </Project>

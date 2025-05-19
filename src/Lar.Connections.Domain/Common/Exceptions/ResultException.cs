@@ -2,17 +2,17 @@
 
 namespace Lar.Connections.Domain.Common.Exceptions;
 
-public class ResultException(Result result) : Exception
+public class ResultException(ResultBase result) : Exception
 {
-	public Result Result => result;
+	public ResultBase Result => result;
 
 	public ResultException(params Validation[] validations)
-		: this(Result.WithValidations(validations))
+		: this(ResultBase.WithValidations(validations))
 	{
 	}
 
 	public ResultException(Exception exception)
-		: this(Result.WithError(exception))
+		: this(ResultBase.WithError(exception))
 	{
 	}
 }
