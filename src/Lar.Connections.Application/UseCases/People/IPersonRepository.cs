@@ -19,4 +19,15 @@ public interface IPersonRepository
 	Task<bool> AddPhoneAsync(long personId, Phone phone);
 	Task<bool> UpdatePhoneAsync(long personId, Phone phone);
 	Task<bool> DeletePhoneAsync(long id);
+
+	Task<(List<Person> People, int TotalCount)> GetPeoplePagedAsync(
+		int page,
+		int pageSize,
+		string? searchTerm = null,
+		bool includeInactive = false,
+		bool includePhones = true,
+		string? sortBy = nameof(Person.Name),
+		bool sortDescending = false);
+
+	Task<int> GetPeopleCountAsync(string? searchTerm = null, bool includeInactive = false);
 }

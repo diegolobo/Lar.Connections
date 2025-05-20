@@ -24,6 +24,70 @@ internal class PersonRepository : IPersonRepository
 		_connectionString = connectionString;
 	}
 
+	public async Task<(List<Person> People, int TotalCount)> GetPeoplePagedAsync(
+		int page,
+		int pageSize,
+		string? searchTerm = null,
+		bool includeInactive = false,
+		bool includePhones = true,
+		string? sortBy = nameof(Person.Name),
+		bool sortDescending = false)
+	{
+		await using var connection = new SqlConnection(_connectionString);
+
+		var totalCount = await GetPeopleCountAsync(searchTerm, includeInactive);
+
+		if (totalCount == 0)
+			return (new List<Person>(), 0);
+
+		var offset = (page - 1) * pageSize;
+		var parameters = new DynamicParameters();
+
+		parameters.Add("@Offset", offset);
+		parameters.Add("@PageSize", pageSize);
+
+		if (!string.IsNullOrWhiteSpace(searchTerm)) parameters.Add("@SearchTerm", $"%{searchTerm}%");
+
+		var whereClause = PersonQueriesPaged.BuildWhereClause(
+			searchTerm,
+			includeInactive);
+
+		var orderByClause = PersonQueriesPaged.BuildOrderByClause(
+			sortBy,
+			sortDescending);
+
+		if (includePhones)
+			return await GetPeopleWithPhonesPagedAsync(
+				connection,
+				parameters,
+				whereClause,
+				orderByClause,
+				totalCount);
+		else
+			return await GetPeoplePagedAsync(
+				connection,
+				parameters,
+				whereClause,
+				orderByClause,
+				totalCount);
+	}
+
+	public async Task<int> GetPeopleCountAsync(string? searchTerm = null, bool includeInactive = false)
+	{
+		await using var connection = new SqlConnection(_connectionString);
+
+		var whereClause = PersonQueriesPaged.BuildWhereClause(
+			searchTerm,
+			includeInactive);
+
+		var query = string.Format(PersonQueriesPaged.GetPeopleCountBase, whereClause);
+
+		var parameters = new DynamicParameters();
+		if (!string.IsNullOrWhiteSpace(searchTerm)) parameters.Add("@SearchTerm", $"%{searchTerm}%");
+
+		return await connection.QuerySingleAsync<int>(query, parameters);
+	}
+
 	public async Task<Person?> GetByIdAsync(long id)
 	{
 		await using var connection = new SqlConnection(_connectionString);
@@ -229,5 +293,57 @@ internal class PersonRepository : IPersonRepository
 			new { id });
 
 		return rowsAffected > 0;
+	}
+
+	private async Task<(List<Person> People, int TotalCount)> GetPeoplePagedAsync(
+		SqlConnection connection,
+		DynamicParameters parameters,
+		string whereClause,
+		string orderByClause,
+		int totalCount)
+	{
+		var query = string.Format(
+			PersonQueriesPaged.GetPeoplePagedBase,
+			orderByClause,
+			whereClause);
+
+		var people = await connection.QueryAsync<Person>(query, parameters);
+
+		return (people.ToList(), totalCount);
+	}
+
+	private async Task<(List<Person> People, int TotalCount)> GetPeopleWithPhonesPagedAsync(
+		SqlConnection connection,
+		DynamicParameters parameters,
+		string whereClause,
+		string orderByClause,
+		int totalCount)
+	{
+		var query = string.Format(
+			PersonQueriesPaged.GetPeopleWithPhonesPagedBase,
+			orderByClause,
+			whereClause);
+
+		var personDict = new Dictionary<long, Person>();
+
+		await connection.QueryAsync<Person, Phone, Person>(
+			query,
+			(person, phone) =>
+			{
+				if (!personDict.TryGetValue(person.Id, out var existingPerson))
+				{
+					existingPerson = person;
+					existingPerson.Phones = [];
+					personDict.Add(person.Id, existingPerson);
+				}
+
+				if (phone is { Id: > 0 }) existingPerson.Phones.Add(phone);
+
+				return existingPerson;
+			},
+			parameters,
+			splitOn: nameof(Phone.Id));
+
+		return (personDict.Values.ToList(), totalCount);
 	}
 }
