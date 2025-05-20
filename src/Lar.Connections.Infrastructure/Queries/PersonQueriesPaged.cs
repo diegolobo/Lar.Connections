@@ -28,9 +28,9 @@ internal static class PersonQueriesPaged
 		                  WHERE 1 = 1 {1}
 		              )
 		              SELECT p.Id, p.Name, p.Document, p.BirthDate, p.Active,
-		                     ph.Id, ph.Number, ph.Type, ph.Active, ph.PersonId
+		                     ph.Id, ph.Number, ph.Type, ph.PersonId
 		              FROM PersonCTE p
-		              LEFT JOIN Phone ph ON p.Id = ph.PersonId AND ph.Active = 1
+		              LEFT JOIN {{PhoneQueries.TableName}} ph ON p.Id = ph.PersonId
 		              WHERE p.RowNum BETWEEN @Offset + 1 AND @Offset + @PageSize
 		              ORDER BY p.RowNum, ph.Id
 		  """;

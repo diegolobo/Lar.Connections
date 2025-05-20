@@ -53,7 +53,7 @@ internal static class PersonQueries
 		 			, BirthDate AS {nameof(Person.BirthDate)}
 		 			, Active AS {nameof(Person.Active)}
 		 	FROM {TableName} 
-		 	WHERE Document = @Document
+		 	WHERE Document LIKE '%' + @Document + '%'
 		 """;
 
 	internal const string Insert =
@@ -105,7 +105,7 @@ internal static class PersonQueries
 		 			, ph.Type AS {nameof(Phone.Type)}
 		 			, ph.PersonId AS {nameof(Phone.PersonId)}
 		     FROM {TableName} p
-		     LEFT JOIN Phone ph ON p.Id = ph.PersonId AND ph.Active = 1
+		     LEFT JOIN {PhoneQueries.TableName} ph ON p.Id = ph.PersonId
 		     WHERE 1 = 1
 		       AND p.Id = @Id
 		 """;
@@ -122,7 +122,7 @@ internal static class PersonQueries
 		 			, ph.Type AS {nameof(Phone.Type)}
 		 			, ph.PersonId AS {nameof(Phone.PersonId)}
 		 	FROM {TableName} p
-		 	LEFT JOIN Phone ph ON p.Id = ph.PersonId AND ph.Active = 1
+		 	LEFT JOIN {PhoneQueries.TableName} ph ON p.Id = ph.PersonId
 		 	WHERE 1 = 1
 		 	  AND p.Active = 1
 		 	ORDER BY p.Name
