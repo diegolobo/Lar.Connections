@@ -51,6 +51,6 @@ public class GetPeopleValidator : AbstractValidator<GetPeopleQuery>
 			nameof(Person.BirthDate)
 		];
 
-		return validFields.Contains(sortBy.ToLower());
+		return validFields.Contains(sortBy);
 	}
 }

@@ -5,43 +5,43 @@ namespace Lar.Connections.Infrastructure.Queries;
 internal static class PersonQueriesPaged
 {
 	internal const string GetPeoplePagedBase =
-		"""
+		$$"""
 
-		            WITH PersonCTE AS (
-		                SELECT p.Id, p.Name, p.Document, p.BirthDate, p.Active,
-		                       ROW_NUMBER() OVER ({0}) as RowNum
-		                FROM Person p
-		                WHERE 1 = 1 {1}
-		            )
-		            SELECT p.Id, p.Name, p.Document, p.BirthDate, p.Active
-		            FROM PersonCTE p
-		            WHERE p.RowNum BETWEEN @Offset + 1 AND @Offset + @PageSize
-		            ORDER BY p.RowNum
-		""";
+		              WITH PersonCTE AS (
+		                  SELECT p.Id, p.Name, p.Document, p.BirthDate, p.Active,
+		                         ROW_NUMBER() OVER ({0}) as RowNum
+		                  FROM {{PersonQueries.TableName}} p
+		                  WHERE 1 = 1 {1}
+		              )
+		              SELECT p.Id, p.Name, p.Document, p.BirthDate, p.Active
+		              FROM PersonCTE p
+		              WHERE p.RowNum BETWEEN @Offset + 1 AND @Offset + @PageSize
+		              ORDER BY p.RowNum
+		  """;
 
 	internal const string GetPeopleWithPhonesPagedBase =
-		"""
-		            WITH PersonCTE AS (
-		                SELECT p.Id, p.Name, p.Document, p.BirthDate, p.Active,
-		                       ROW_NUMBER() OVER ({0}) as RowNum
-		                FROM Person p
-		                WHERE 1 = 1 {1}
-		            )
-		            SELECT p.Id, p.Name, p.Document, p.BirthDate, p.Active,
-		                   ph.Id, ph.Number, ph.Type, ph.Active, ph.PersonId
-		            FROM PersonCTE p
-		            LEFT JOIN Phone ph ON p.Id = ph.PersonId AND ph.Active = 1
-		            WHERE p.RowNum BETWEEN @Offset + 1 AND @Offset + @PageSize
-		            ORDER BY p.RowNum, ph.Id
-		""";
+		$$"""
+		              WITH PersonCTE AS (
+		                  SELECT p.Id, p.Name, p.Document, p.BirthDate, p.Active,
+		                         ROW_NUMBER() OVER ({0}) as RowNum
+		                  FROM {{PersonQueries.TableName}} p
+		                  WHERE 1 = 1 {1}
+		              )
+		              SELECT p.Id, p.Name, p.Document, p.BirthDate, p.Active,
+		                     ph.Id, ph.Number, ph.Type, ph.Active, ph.PersonId
+		              FROM PersonCTE p
+		              LEFT JOIN Phone ph ON p.Id = ph.PersonId AND ph.Active = 1
+		              WHERE p.RowNum BETWEEN @Offset + 1 AND @Offset + @PageSize
+		              ORDER BY p.RowNum, ph.Id
+		  """;
 
 	internal const string GetPeopleCountBase =
-		"""
-			SELECT COUNT(*)
-			FROM Person p
-			WHERE 1 = 1 
-				{0}
-		""";
+		$$"""
+		  	SELECT COUNT(*)
+		  	FROM {{PersonQueries.TableName}} p
+		  	WHERE 1 = 1 
+		  		{0}
+		  """;
 
 	internal static string BuildWhereClause(
 		string? searchTerm,
