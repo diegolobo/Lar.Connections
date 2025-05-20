@@ -8,6 +8,7 @@ public class ExcludePersonValidator : AbstractValidator<ExcludePersonCommand>
 	{
 		RuleFor(x => x.Id)
 			.NotEmpty()
+			.NotEqual(0)
 			.WithMessage("Id is required.");
 	}
 }

@@ -58,6 +58,69 @@ internal class PersonRepository : IPersonRepository
 		return person;
 	}
 
+	public async Task<List<Phone>> GetPhonesByPersonIdAsync(long personId)
+	{
+		await using var connection = new SqlConnection(_connectionString);
+		var phones = await connection.QueryAsync<Phone>(
+			PhoneQueries.GetByPersonId,
+			new { PersonId = personId });
+
+		return phones.ToList();
+	}
+
+	public async Task<Person?> GetPersonWithPhonesAsync(long id)
+	{
+		await using var connection = new SqlConnection(_connectionString);
+
+		var personDict = new Dictionary<long, Person>();
+
+		var result = await connection.QueryAsync<Person, Phone, Person>(
+			PersonQueries.GetPersonWithPhones,
+			(person, phone) =>
+			{
+				if (!personDict.TryGetValue(person.Id, out var existingPerson))
+				{
+					existingPerson = person;
+					existingPerson.Phones = [];
+					personDict.Add(person.Id, existingPerson);
+				}
+
+				if (phone.Id > 0) existingPerson.Phones.Add(phone);
+
+				return existingPerson;
+			},
+			new { Id = id },
+			splitOn: nameof(Phone.Id));
+
+		return personDict.Values.FirstOrDefault();
+	}
+
+	public async Task<List<Person>> GetPersonsWithPhonesAsync()
+	{
+		await using var connection = new SqlConnection(_connectionString);
+
+		var personDict = new Dictionary<long, Person>();
+
+		await connection.QueryAsync<Person, Phone, Person>(
+			PersonQueries.GetPersonsWithPhones,
+			(person, phone) =>
+			{
+				if (!personDict.TryGetValue(person.Id, out var existingPerson))
+				{
+					existingPerson = person;
+					existingPerson.Phones = [];
+					personDict.Add(person.Id, existingPerson);
+				}
+
+				if (phone.Id > 0) existingPerson.Phones.Add(phone);
+
+				return existingPerson;
+			},
+			splitOn: nameof(Phone.Id));
+
+		return personDict.Values.ToList();
+	}
+
 	public async Task<long> CreateAsync(Person person)
 	{
 		await using var connection = new SqlConnection(_connectionString);
@@ -157,80 +220,14 @@ internal class PersonRepository : IPersonRepository
 		return rowsAffected > 0;
 	}
 
-	public async Task<bool> RemovePhoneAsync(long personId, long phoneId)
+	public async Task<bool> DeletePhoneAsync(long id)
 	{
 		await using var connection = new SqlConnection(_connectionString);
+
 		var rowsAffected = await connection.ExecuteAsync(
-			PhoneQueries.Remove,
-			new
-			{
-				Id = phoneId,
-				PersonId = personId
-			});
+			PhoneQueries.Delete,
+			new { id });
 
 		return rowsAffected > 0;
-	}
-
-	public async Task<List<Phone>> GetPhonesByPersonIdAsync(long personId)
-	{
-		await using var connection = new SqlConnection(_connectionString);
-		var phones = await connection.QueryAsync<Phone>(
-			PhoneQueries.GetByPersonId,
-			new { PersonId = personId });
-
-		return phones.ToList();
-	}
-
-	public async Task<Person?> GetPersonWithPhonesAsync(long id)
-	{
-		await using var connection = new SqlConnection(_connectionString);
-
-		var personDict = new Dictionary<long, Person>();
-
-		var result = await connection.QueryAsync<Person, Phone, Person>(
-			PersonQueries.GetPersonWithPhones,
-			(person, phone) =>
-			{
-				if (!personDict.TryGetValue(person.Id, out var existingPerson))
-				{
-					existingPerson = person;
-					existingPerson.Phones = [];
-					personDict.Add(person.Id, existingPerson);
-				}
-
-				if (phone.Id > 0) existingPerson.Phones.Add(phone);
-
-				return existingPerson;
-			},
-			new { Id = id },
-			splitOn: nameof(Phone.Id));
-
-		return personDict.Values.FirstOrDefault();
-	}
-
-	public async Task<List<Person>> GetPersonsWithPhonesAsync()
-	{
-		await using var connection = new SqlConnection(_connectionString);
-
-		var personDict = new Dictionary<long, Person>();
-
-		await connection.QueryAsync<Person, Phone, Person>(
-			PersonQueries.GetPersonsWithPhones,
-			(person, phone) =>
-			{
-				if (!personDict.TryGetValue(person.Id, out var existingPerson))
-				{
-					existingPerson = person;
-					existingPerson.Phones = [];
-					personDict.Add(person.Id, existingPerson);
-				}
-
-				if (phone.Id > 0) existingPerson.Phones.Add(phone);
-
-				return existingPerson;
-			},
-			splitOn: nameof(Phone.Id));
-
-		return personDict.Values.ToList();
 	}
 }

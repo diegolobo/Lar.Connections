@@ -59,8 +59,7 @@ public class DatabaseInitializer : IDatabaseInitializer
 				 	SELECT COUNT(*) 
 				 	FROM sys.tables 
 				 	WHERE 1 = 1
-				 	  AND TABLE_CATALOG = DB_NAME() 
-				 	  AND TABLE_NAME = '{tableName}';
+				 	  AND [name] = '{tableName}';
 				 """;
 
 			var tableExists = await connection.ExecuteScalarAsync<int>(checkTableQuery);

@@ -20,15 +20,14 @@ internal static class PhoneQueries
 		 	FROM {TableName} 
 		 	WHERE 1 = 1
 		 	  AND PersonId = @PersonId 
-		 	  AND Active = 1
 		 	ORDER BY Id
 		 """;
 
 	internal const string Insert =
 		$"""
-		 	INSERT INTO {TableName} (Number, Type, Active, PersonId)
+		 	INSERT INTO {TableName} (Number, Type, PersonId)
 		 	OUTPUT INSERTED.Id
-		 	VALUES (@Number, @Type, @Active, @PersonId)
+		 	VALUES (@Number, @Type, @PersonId)
 		 """;
 
 	internal const string Update =
@@ -40,18 +39,15 @@ internal static class PhoneQueries
 		 	  AND PersonId = @PersonId
 		 """;
 
-	internal const string Remove =
-		$"""
-		 	UPDATE {TableName} SET 
-		 		Active = 0 
-		 	WHERE Id = @Id 
-		 	  AND PersonId = @PersonId
-		 """;
-
 	internal const string DeleteByPersonId =
 		$"""
-		 	UPDATE {TableName} SET 
-		 		Active = 0 
+		 	DELETE FROM {TableName} 
 		 	WHERE PersonId = @PersonId
+		 """;
+
+	internal const string Delete =
+		$"""
+		  	DELETE FROM {TableName}
+		 	WHERE PersonId = @id
 		 """;
 }

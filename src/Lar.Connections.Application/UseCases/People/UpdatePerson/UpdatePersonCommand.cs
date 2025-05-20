@@ -4,9 +4,21 @@ using MediatR;
 
 namespace Lar.Connections.Application.UseCases.People.UpdatePerson;
 
-public record UpdatePersonCommand(
-	long Id,
-	string Name,
-	string Document,
-	DateTime BirthDate)
-	: IRequest<Result<UpdatePersonResult>>;
+public class UpdatePersonCommand : IRequest<Result<UpdatePersonResult>>
+{
+	private long _id;
+	public string Name { get; set; } = string.Empty;
+	public string Document { get; set; } = string.Empty;
+	public DateTime BirthDate { get; set; }
+
+	public UpdatePersonCommand SetId(long id)
+	{
+		_id = id;
+		return this;
+	}
+
+	public long GetId()
+	{
+		return _id;
+	}
+}

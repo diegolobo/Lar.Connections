@@ -2,7 +2,7 @@
 
 public static class DatabaseConstants
 {
-	public const string DefaultConnectionName = "DefaultConnections";
+	public const string DefaultConnectionName = "DefaultConnection";
 
 	public const string EmptyConnectionStringErrorMessage = "Connection string 'DefaultConnection' not found.";
 }

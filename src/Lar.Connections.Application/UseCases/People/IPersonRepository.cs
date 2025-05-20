@@ -18,5 +18,5 @@ public interface IPersonRepository
 	Task<bool> DeactivateAsync(long id);
 	Task<bool> AddPhoneAsync(long personId, Phone phone);
 	Task<bool> UpdatePhoneAsync(long personId, Phone phone);
-	Task<bool> RemovePhoneAsync(long personId, long phoneId);
+	Task<bool> DeletePhoneAsync(long id);
 }

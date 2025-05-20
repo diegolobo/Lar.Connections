@@ -14,9 +14,7 @@ public class NewPersonValidator : AbstractValidator<NewPersonCommand>
 
 		RuleFor(x => x.Document)
 			.NotEmpty()
-			.WithMessage("Document is required.")
-			.EmailAddress()
-			.WithMessage("Document is not valid.");
+			.WithMessage("Document is required.");
 
 		RuleFor(x => x.BirthDate)
 			.NotEmpty()

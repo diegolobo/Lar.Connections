@@ -6,8 +6,9 @@ public class UpdatePersonValidator : AbstractValidator<UpdatePersonCommand>
 {
 	public UpdatePersonValidator()
 	{
-		RuleFor(x => x.Id)
+		RuleFor(x => x.GetId())
 			.NotEmpty()
+			.NotEqual(0)
 			.WithMessage("Id is required.");
 
 		RuleFor(x => x.Name)
@@ -16,9 +17,7 @@ public class UpdatePersonValidator : AbstractValidator<UpdatePersonCommand>
 
 		RuleFor(x => x.Document)
 			.NotEmpty()
-			.WithMessage("Document is required.")
-			.EmailAddress()
-			.WithMessage("Document is not valid.");
+			.WithMessage("Document is required.");
 
 		RuleFor(x => x.BirthDate)
 			.NotEmpty()
