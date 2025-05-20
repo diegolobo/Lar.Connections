@@ -25,6 +25,6 @@ public class ActivatePersonHandler : IRequestHandler<ActivatePersonCommand, Resu
 
 		return await _repository.ActivateAsync(request.Id)
 			? new ActivatePersonResult(true)
-			: Result<ActivatePersonResult>.WithError("Unable to exclude person, please try again later");
+			: Result<ActivatePersonResult>.WithError("Unable to activate this person, please try again later");
 	}
 }

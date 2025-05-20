@@ -12,6 +12,47 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();
 builder.Services.AddDatabase();
+builder.Services.AddOutputCache(x =>
+{
+	x.AddBasePolicy(c => c.Cache());
+	x.AddPolicy("PersonByDocumentCache", c =>
+		c.Cache()
+			.Expire(TimeSpan.FromHours(1))
+			.Tag("people"));
+	x.AddPolicy("PersonByIdCache", c =>
+		c.Cache()
+			.Expire(TimeSpan.FromHours(1))
+			.Tag("people"));
+
+	x.AddPolicy("GetAllCache", c =>
+	{
+		c.Cache()
+			.Expire(TimeSpan.FromHours(1))
+			.SetVaryByQuery([
+				"page",
+				"pageSize",
+				"searchTerm",
+				"includeInactive",
+				"includePhones",
+				"sortBy",
+				"sortDescending"
+			])
+			.Tag("people");
+	});
+
+	x.AddPolicy("SearchCache", c =>
+	{
+		c.Cache()
+			.Expire(TimeSpan.FromHours(1))
+			.SetVaryByQuery([
+				"page",
+				"pageSize",
+				"includeInactive",
+				"includePhones"
+			])
+			.Tag("people");
+	});
+});
 
 if (builder.Environment.IsDevelopment())
 {
@@ -30,6 +71,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseOutputCache();
 
 app.MapControllers();
 

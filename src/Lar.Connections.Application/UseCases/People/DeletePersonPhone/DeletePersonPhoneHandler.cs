@@ -29,6 +29,7 @@ public class DeletePersonPhoneHandler : IRequestHandler<DeletePersonPhoneCommand
 
 		return await _repository.DeletePhoneAsync(request.Id)
 			? new DeletePersonPhoneResult(true)
-			: Result<DeletePersonPhoneResult>.WithError("Unable to exclude person, please try again later");
+			: Result<DeletePersonPhoneResult>.WithError(
+				"Unable to exclude phone for this person, please try again later");
 	}
 }

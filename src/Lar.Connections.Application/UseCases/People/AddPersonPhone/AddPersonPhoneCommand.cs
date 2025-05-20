@@ -6,7 +6,20 @@ using MediatR;
 namespace Lar.Connections.Application.UseCases.People.AddPersonPhone;
 
 public record AddPersonPhoneCommand(
-	long PersonId,
 	PhoneType Type,
 	string Number)
-	: IRequest<Result<AddPersonPhoneResult>>;
+	: IRequest<Result<AddPersonPhoneResult>>
+{
+	private long _personId;
+
+	public AddPersonPhoneCommand SetPersonId(long personId)
+	{
+		_personId = personId;
+		return this;
+	}
+
+	public long GetPersonId()
+	{
+		return _personId;
+	}
+}

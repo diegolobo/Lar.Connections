@@ -25,6 +25,6 @@ public class DeactivateHandler : IRequestHandler<DeactivateCommand, Result<Deact
 
 		return await _repository.DeactivateAsync(request.Id)
 			? new DeactivateResult(true)
-			: Result<DeactivateResult>.WithError("Unable to exclude person, please try again later");
+			: Result<DeactivateResult>.WithError("Unable to deactivate person, please try again later");
 	}
 }

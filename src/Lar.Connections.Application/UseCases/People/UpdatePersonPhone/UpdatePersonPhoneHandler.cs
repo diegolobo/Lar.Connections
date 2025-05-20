@@ -18,22 +18,29 @@ public class UpdatePersonPhoneHandler : IRequestHandler<UpdatePersonPhoneCommand
 		UpdatePersonPhoneCommand request,
 		CancellationToken cancellationToken)
 	{
-		var existingPerson = await _repository.GetByIdAsync(request.PersonId);
+		var existingPerson = await _repository.GetByIdAsync(request.GetPersonId());
 
 		if (existingPerson is null)
-			return Result<UpdatePersonPhoneResult>.EntityNotFound(nameof(Person), request.PersonId, "Person not found");
+			return Result<UpdatePersonPhoneResult>.EntityNotFound(
+				nameof(Person),
+				request.GetPersonId(),
+				"Person not found");
 
-		var existingPhone = await _repository.GetPhonesByPersonIdAsync(request.PersonId);
-		if (!existingPhone.Exists(p => p.Id == request.Id))
-			return Result<UpdatePersonPhoneResult>.EntityNotFound(nameof(Phone), request.PersonId, "Phone not found");
+		var existingPhone = await _repository.GetPhonesByPersonIdAsync(request.GetPersonId());
+		if (!existingPhone.Exists(p => p.Id == request.GetId()))
+			return Result<UpdatePersonPhoneResult>.EntityNotFound(
+				nameof(Phone),
+				request.GetPersonId(),
+				"Phone not found");
 
 		return await _repository.UpdatePhoneAsync(
-			request.PersonId,
+			request.GetPersonId(),
 			Phone.Create(
-				request.PersonId,
+				request.GetPersonId(),
 				request.Number,
 				request.Type))
 			? new UpdatePersonPhoneResult(true)
-			: Result<UpdatePersonPhoneResult>.WithError("Unable to exclude person, please try again later");
+			: Result<UpdatePersonPhoneResult>.WithError(
+				"Unable to update phone for this person, please try again later");
 	}
 }
